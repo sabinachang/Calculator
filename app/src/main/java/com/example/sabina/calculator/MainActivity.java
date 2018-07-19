@@ -13,10 +13,11 @@ public class MainActivity extends AppCompatActivity {
     private int[] operatorBtn = {R.id.btnMinus,R.id.btnTime,R.id.btnPlus,R.id.btnDivide};
     private boolean stateError = false;
     private boolean lastNumeric = false;
-    private TextView answerTextView ;
-    private TextView expressionTextView;
     private boolean lastDot = false;
     private boolean lastPercent = false;
+    private TextView answerTextView ;
+    private TextView expressionTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         expressionTextView = findViewById(R.id.expressionTextView);
         answerTextView = findViewById(R.id.answerTextView);
+        answerTextView.setText("0");
         setNumbericBtnListener();
         setOperaterBtnListener();
     }
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
                     expressionTextView.append(button.getText());
                 }
                 lastNumeric = true;
+                lastPercent = false;
+                lastDot = false;
             }
 
         };
@@ -75,10 +79,11 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnReset).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                expressionTextView.setText("0");
+                expressionTextView.setText("");
                 lastNumeric = false;
                 stateError = false;
                 lastDot = false;
+                lastPercent = false;
             }
         });
 
@@ -97,7 +102,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnEqual).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                answerTextView.setText("1233");
+                String infixExpr = expressionTextView.getText().toString();
+
+                answerTextView.setText(Evaluate.evaluate(infixExpr));
              }
         });
 
