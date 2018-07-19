@@ -56,7 +56,7 @@
                 android:background="@drawable/btn_percent"/>
             <Button
                 android:id="@+id/btnDivide"
-                android:text="/"
+                android:text="÷"
                 style="@style/buttonStyle"
                 android:background="@drawable/btn_divide"/>
 
