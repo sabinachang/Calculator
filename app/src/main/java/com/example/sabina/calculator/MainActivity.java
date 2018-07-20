@@ -6,17 +6,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
 
     private int[] numericBtn = {R.id.btnOne, R.id.btnTwo,R.id.btnThree,R.id.btnFour,R.id.btnFive,R.id.btnSix,R.id.btnSeven,R.id.btnEight,R.id.btnNine,R.id.btnZero};
     private int[] operatorBtn = {R.id.btnMinus,R.id.btnTime,R.id.btnPlus,R.id.btnDivide};
+    private Stack<Integer> negativePosition = new Stack<Integer>();
+    private int lastOpPosition = -1;
+    private int opPosition = 0;
+    private int inputCount = 0;
     private boolean stateError = false;
     private boolean lastNumeric = false;
     private boolean lastDot = false;
     private boolean lastPercent = false;
+    private boolean lastChangeSign = false;
     private TextView answerTextView ;
     private TextView expressionTextView;
+
 
 
     @Override
@@ -49,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 lastNumeric = true;
                 lastPercent = false;
                 lastDot = false;
+                inputCount += 1;
             }
 
         };
@@ -68,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
                     expressionTextView.append(button.getText());
                     lastNumeric = false;
                     lastDot = false;
+                    inputCount += 1;
+                    opPosition = inputCount;
+
+
                 }
             }
         };
@@ -84,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
                 stateError = false;
                 lastDot = false;
                 lastPercent = false;
+                inputCount = 0;
+                opPosition = 0;
             }
         });
 
@@ -95,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                     expressionTextView.append(button.getText());
                     lastDot = true;
                     lastNumeric = false;
+                    inputCount += 1;
                 }
             }
         });
@@ -104,21 +121,48 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String infixExpr = expressionTextView.getText().toString();
 
-                answerTextView.setText(Evaluate.evaluate(infixExpr));
+                answerTextView.setText(Evaluate.evaluate(infixExpr,negativePosition));
+//                answerTextView.setText("Calculate");
+
              }
+        });
+
+        findViewById(R.id.btnChangesign).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if( lastOpPosition != opPosition){
+                    lastOpPosition = opPosition;
+                    negativePosition.push(opPosition);
+                    addNegativeSign(expressionTextView.getText().toString(),opPosition);
+                    inputCount +=  1;
+
+                }
+//                else if (lastChangeSign){
+//                    lastChangeSign
+//                }
+            }
         });
 
         findViewById(R.id.btnPercent).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(MainActivity.this,"No function for % yet",Toast.LENGTH_LONG).show();
                 if(lastNumeric && !lastDot && !lastPercent && !stateError){
                     Button button = (Button) view;
-                    expressionTextView.append(button.getText());
-                    lastPercent = true;
-                    lastNumeric = false;
+
+//                    expressionTextView.append(button.getText());
+//                    lastPercent = true;
+//                    lastNumeric = false;
 
                 }
             }
         });
+    }
+
+    private void addNegativeSign(String exp,int position){
+
+        exp = new StringBuilder(exp).insert(position,"-").toString();
+        expressionTextView.setText(exp);
+        return;
     }
 }
