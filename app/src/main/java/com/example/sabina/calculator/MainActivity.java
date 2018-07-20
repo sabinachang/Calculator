@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean lastChangeSign = false;
     private TextView answerTextView ;
     private TextView expressionTextView;
-
+    private boolean expCLR = false;
 
 
     @Override
@@ -49,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Button button = (Button) view;
 
+                if(expCLR){
+                    expressionTextView.setText("");
+                    expCLR = false;
+                }
                 if(stateError){
                    expressionTextView.append(button.getText());
                    stateError = false;
@@ -73,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(expCLR){
+                    expressionTextView.setText("");
+                    expCLR = false;
+                }
                 if((lastNumeric || lastPercent) && !stateError){
                     Button button = (Button) view;
                     expressionTextView.append(button.getText());
@@ -80,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
                     lastDot = false;
                     inputCount += 1;
                     opPosition = inputCount;
-
-
                 }
             }
         };
@@ -106,6 +112,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnPoint).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(expCLR){
+                    expressionTextView.setText("");
+                    expCLR = false;
+                }
                 if(lastNumeric && !lastDot && !lastPercent && !stateError){
                     Button button = (Button) view;
                     expressionTextView.append(button.getText());
@@ -119,17 +129,30 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnEqual).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String infixExpr = expressionTextView.getText().toString();
 
-                answerTextView.setText(Evaluate.evaluate(infixExpr,negativePosition));
-//                answerTextView.setText("Calculate");
-
+                    if(inputCount > 0){
+                        String infixExpr = expressionTextView.getText().toString();
+                        answerTextView.setText(Evaluate.evaluate(infixExpr,negativePosition));
+                        expCLR = true;
+                        while(!negativePosition.empty())
+                            negativePosition.pop();
+                        lastNumeric = false;
+                        stateError = false;
+                        lastDot = false;
+                        lastPercent = false;
+                        inputCount = 0;
+                        opPosition = 0;
+                    }
              }
         });
 
         findViewById(R.id.btnChangesign).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(expCLR){
+                    expressionTextView.setText("");
+                    expCLR = false;
+                }
                 if( lastOpPosition != opPosition){
                     lastOpPosition = opPosition;
                     negativePosition.push(opPosition);
